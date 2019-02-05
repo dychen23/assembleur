@@ -1,0 +1,134 @@
+         LDA     0,i
+         LDX     0,i
+bclLect: CHARO   caract,d
+         CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    div10
+         CPA     ' ',i 
+         BRLT    erreur 
+         CPA     '-',i 
+         BRLT    tiret 
+         CPA     'A',i 
+         BRLT    erreur 
+         CPA     'Z',i
+         BRLE    verifVoy
+         CPA     'a',i
+         BRLT    erreur 
+         CPA     'z',i 
+         BRLE    transMin
+         BR      erreur
+
+transMin:SUBA    0x0020,i
+         STBYTEA caract,d
+
+verifVoy:LDX     0,i
+         STX     tempApTr,d 
+         CPA     'A',i
+         BREQ    multi2
+         CPA     'E',i
+         BREQ    multi2   
+         CPA     'I',i
+         BREQ    multi2   
+         CPA     'O',i
+         BREQ    multi2   
+         CPA     'U',i
+         BREQ    multi2   
+         CPA     'Y',i
+         BREQ    multi2
+         BR      bclLect 
+
+multi2:  SUBA    'A',i
+         ADDA    1,i
+         ASLA    
+         ADDA    totalCal,d
+         STA     totalCal,d
+         BR      bclLect
+
+ltrNorm: SUBA    'A',i
+         ADDA    1,i
+         ADDA    totalCal,d
+         STA     totalCal,d
+         BR      bclLect 
+
+tiret:   LDX     tempApTr,d 
+         BRNE    erreur
+         LDX     1,i
+         STX     tempApTr,d
+         LDA     totalCal,d
+         ADDA    27,I
+         STA     totalCal,d
+         BR      bclLect
+
+apost:   LDX     tempApTr,d 
+         BRNE    erreur
+         LDX     1,i
+         STX     tempApTr,d
+         LDA     totalCal,d
+         ADDA    28,I
+         STA     totalCal,d
+         BR      bclLect
+
+
+ajoutVoy:LDX     totalCal,d
+         BREQ    pasVoyPr
+         LDA     nbGrVoy,d
+         ADDA    1,i
+         STA     nbGrVoy,d
+         LDX     0,i
+         STX     totalCal,d
+         BR      bclLect 
+
+pasVoyPr:LDX     1,i
+         STX     totalCal,d
+         BR      bclLect
+
+div10:   LDA     totalCal,d
+         LDX     0,i
+
+bcldiv10:SUBA    divis,i
+         ADDX    1,i
+         CPA     0,i
+         BRGE    bcldiv10
+         ADDA    divis,i
+         SUBX    1,i
+         STA     reste,d
+         STX     res,d
+
+affich:  STRO    msgFin1,d
+         DECO    reste,d
+         STRO    msgFin2,d
+        
+         
+erreur:  STRO    msgErr,d
+
+fin:     STOP
+
+msgFin1: .ASCII  "Le code validation est \x00"
+msgFin2: .ASCII  ".\x00"
+msgErr:  .ASCII "Erreur: entrée invalide! \x00"
+avCaract:.BLOCK  1
+caract:  .BLOCK  1
+nbGrVoy: .BLOCK  2
+precVoy: .BLOCK  2
+totalCal: .BLOCK  2
+
+divis:   .EQUATE 10
+res:     .BLOCK 2
+reste:   .BLOCK 2
+tempApTr:.BLOCK 2
+         .END
+
+
+
+
+
+
+
+
+
+
+
+
+
+

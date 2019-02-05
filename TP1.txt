@@ -1,0 +1,115 @@
+
+         LDA     0,i
+         LDX     0,i
+bclLect: CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    div10       
+         CPA     ' ',i
+         BREQ    bclLect
+         CPA     '-',i 
+         BREQ    tiret
+         CPA     'A',i 
+         BRLT    erreur 
+         CPA     'Z',i
+         BRLE    verifVoy
+         CPA     'a',i
+         BRLT    erreur 
+         CPA     'z',i 
+         BRLE    transMin 
+         BR      erreur
+
+transMin:SUBA    0x0020,i
+         STBYTEA caract,d
+
+verifVoy:LDX     0,i
+         STX     temApTr,d
+         CPA     'A',i
+         BREQ    multi2
+         CPA     'E',i
+         BREQ    multi2   
+         CPA     'I',i
+         BREQ    multi2   
+         CPA     'O',i
+         BREQ    multi2   
+         CPA     'U',i
+         BREQ    multi2   
+         CPA     'Y',i
+         BREQ    multi2
+         BR      ltrNorm  
+
+multi2:  SUBA    'A',i
+         ADDA    1,i
+         ASLA    
+         ADDA    totalCal,d
+         STA     totalCal,d
+         BR      bclLect
+
+ltrNorm: SUBA    'A',i
+         ADDA    1,i
+         ADDA    totalCal,d
+         STA     totalCal,d
+         BR      bclLect 
+
+tiret:   LDX     temApTr,d
+         BRNE    erreur
+         LDX     1,i 
+         STX     temApTr,d
+         LDA     totalCal,d
+         ADDA    27,i
+         STA     totalCal,d
+         BR      bclLect
+
+apost:   LDX     temApTr,d
+         BRNE    erreur
+         LDX     1,i 
+         STX     temApTr,d
+         LDA     totalCal,d
+         ADDA    28,i
+         STA     totalCal,d
+         BR      bclLect 
+
+div10:   LDA     totalCal,d
+         LDX     0,i
+bcldiv10:SUBA    divis,i
+         ADDX    1,i
+         CPA     0,i         
+         BRGE    bcldiv10
+         ADDA    divis,i
+         SUBX    1,i
+         STA     reste,d
+         STX     res,d
+
+affich:  STRO    msgFin1,d
+         DECO    reste,d 
+         STRO    msgFin2,d
+         BR      fin
+
+erreur:  STRO    msgErr,d       
+
+fin:     STOP
+msgErr:  .ASCII  "Erreur: entrée invalide!\x00"
+msgFin1: .ASCII  "Le code de validation est \x00"
+msgFin2: .ASCII  ".\x00"
+avCaract:.BLOCK  1
+caract:  .BLOCK  1
+totalCal:.BLOCK  2           ;#2d
+divis:   .EQUATE 10          ;#2d
+res:     .BLOCK 2            ;#2d
+reste:   .BLOCK 2            ;#2d
+temApTr: .BLOCK 2
+         .END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
