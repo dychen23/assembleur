@@ -40,15 +40,15 @@ verifVoy:LDX     0,i	    ;on verifie les voyelles pour les multiplier par 2
 multi2:  SUBA    'A',i      ;on multiplie par deux
          ADDA    1,i
          ASLA    
-         ADDA    totalCal,d
+         ADDA    totalCal,d ;on aditionne a totalCal
          STA     totalCal,d
          BR      bclLect
-ltrNorm: SUBA    'A',i
+ltrNorm: SUBA    'A',i      ;si c'est minuscule, on additione a totalCal
          ADDA    1,i
          ADDA    totalCal,d
          STA     totalCal,d
          BR      bclLect 
-tiret:   LDX     temApTr,d ;  ; si c'est un tiret, on ajoute 27
+tiret:   LDX     temApTr,d  ; si c'est un tiret, on ajoute 27
          BRNE    erreur
          LDX     1,i 
          STX     temApTr,d
@@ -77,7 +77,7 @@ bcldiv10:SUBA    divis,i 	;on boucle jusqu'a c'est negatif
          SUBX    1,i
          STA     reste,d
          STX     res,d      
-affich:  STRO    msgVali1,d 
+affich:  STRO    msgVali1,d  on affiche les messages de validation
          DECO    reste,d 
          STRO    msgVali2,d      
          LDA     0,i         ;vide le tampon
