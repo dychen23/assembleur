@@ -5,7 +5,7 @@
 debut:   STRO    msgEntre,d  ;message d'invite 
 bclLect: CHARI   caract,d    ;l'input de l'utilisateur
          LDA     avCaract,d
-         CPA     ' ',i	     ;verification des caracteres interdit
+         CPA     ' ',i	      ;verification des caracteres interdit
          BREQ    bclLect     ;ou bien des caracteres speciaux
          CPA     '\n',i      
          BREQ    div10       
@@ -22,7 +22,7 @@ bclLect: CHARI   caract,d    ;l'input de l'utilisateur
          BR      erreur
 transMin:SUBA    0x0020,i
          STBYTEA caract,d
-verifVoy:LDX     0,i	    ;on verifie les voyelles pour les multiplier par 2
+verifVoy:LDX     0,i	       ;on verifie les voyelles pour les multiplier par 2
          STX     temApTr,d
          CPA     'A',i
          BREQ    multi2
@@ -37,18 +37,18 @@ verifVoy:LDX     0,i	    ;on verifie les voyelles pour les multiplier par 2
          CPA     'Y',i
          BREQ    multi2
          BR      ltrNorm  
-multi2:  SUBA    'A',i      ;on multiplie par deux
+multi2:  SUBA    'A',i       ;on multiplie par deux
          ADDA    1,i
          ASLA    
-         ADDA    totalCal,d ;on aditionne a totalCal
+         ADDA    totalCal,d  ;on aditionne a totalCal
          STA     totalCal,d
          BR      bclLect
-ltrNorm: SUBA    'A',i      ;si c'est minuscule, on additione a totalCal
+ltrNorm: SUBA    'A',i       ;si c'est minuscule, on additione a totalCal
          ADDA    1,i
          ADDA    totalCal,d
          STA     totalCal,d
          BR      bclLect 
-tiret:   LDX     temApTr,d  ; si c'est un tiret, on ajoute 27
+tiret:   LDX     temApTr,d   ;si c'est un tiret, on ajoute 27
          BRNE    erreur
          LDX     1,i 
          STX     temApTr,d
@@ -56,7 +56,7 @@ tiret:   LDX     temApTr,d  ; si c'est un tiret, on ajoute 27
          ADDA    27,i
          STA     totalCal,d
          BR      bclLect
-apost:   LDX     temApTr,d     ; si c'est un apostrophe, on ajoute 28
+apost:   LDX     temApTr,d   ;si c'est un apostrophe, on ajoute 28
          BRNE    erreur
          LDX     1,i 
          STX     temApTr,d
@@ -69,15 +69,15 @@ div10:   LDA     totalCal,d
          LDX     0,i
         ; CPA     0,i
         ; BREQ    fin
-bcldiv10:SUBA    divis,i 	;on boucle jusqu'a c'est negatif
+bcldiv10:SUBA    divis,i     ;on boucle jusqu'a c'est negatif
          ADDX    1,i
          CPA     0,i         
          BRGE    bcldiv10
-         ADDA    divis,i	; quand c'est negatif, on re-ajoute le reste
+         ADDA    divis,i     ;quand c'est negatif, on re-ajoute le divis
          SUBX    1,i
          STA     reste,d
          STX     res,d      
-affich:  STRO    msgVali1,d  on affiche les messages de validation
+affich:  STRO    msgVali1,d  ;on affiche les messages de validation
          DECO    reste,d 
          STRO    msgVali2,d      
          LDA     0,i         ;vide le tampon
