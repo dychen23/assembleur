@@ -13,7 +13,7 @@
          LDA     0,i         ;initialisation à 0 du registre accumulateur
          LDX     0,i
          STRO    bienvenu,d  ;message bienvenue 
-         STRO    msgQuit,d 
+         ;STRO    msgQuit,d 
 debut:   STRO    msgEntre,d  ;message d'invite 
 bclLect: CHARI   caract,d    ;l'input de l'utilisateur
          LDA     avCaract,d
@@ -76,9 +76,11 @@ apost:   LDX     temApTr,d   ;si c'est un apostrophe, on ajoute 28
          ADDA    28,i
          STA     totalCal,d
          BR      bclLect 
-;enter: 
+
 div10:   LDA     totalCal,d
          LDX     0,i
+        ; CPA     0,i
+        ; BREQ    fin
 bcldiv10:SUBA    divis,i     ;on boucle jusqu'a c'est negatif
          ADDX    1,i
          CPA     0,i         
@@ -90,20 +92,20 @@ bcldiv10:SUBA    divis,i     ;on boucle jusqu'a c'est negatif
 affich:  STRO    msgVali1,d  ;on affiche les messages de validation
          DECO    reste,d 
          STRO    msgVali2,d      
-         LDA     0,i         ;on vide totalCal
-         STA     totalCal,d  
+         LDA     0,i         ;vide le tampon
+         STA     totalCal,d  ;vide le tampon
          BR      debut 
 erreur:  STRO    msgErr,d  
-bclTamp: CHARI   caract,d    ;vide le tampon
-entTamp: LDA     avCaract,d  ;vide le tampon
+         LDA     0,i         ;vide le tampon
+         STA     totalCal,d  ;vide le tampon
+entTamp: LDA     avCaract,d
          CPA     '\n',i
-         BREQ    debut
-         BR      bclTamp
+         BR      debut   
 fin:     STRO    msgFin,d
          STOP
 
 bienvenu:.ASCII  "Bienvenue au TP1 :\n\n\x00"
-msgQuit: .ASCII  "Pour quitter, entrer ENTER\n\x00"
+msgQuit: .ASCII  "Pour quitter, entrer ENTER\n"
 msgEntre:.ASCII  "Veuillez entrer votre nom de famille:\x00"
 msgErr:  .ASCII  "\nErreur: entrée invalide!\n\n\x00"
 msgVali1:.ASCII  "\nLe code de validation est \x00"

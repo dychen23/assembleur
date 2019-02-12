@@ -1,0 +1,71 @@
+         LDA     0,i
+         LDX     0,i
+bclLect: CHARI   tab,x
+         LDBYTEA tab,x
+         ADDX    1,i
+         CPA     '\n',i
+         BRNE    bclLect
+         STX     compt,d
+         LDX     0,i
+         LDA     0,i
+bclVoy:  LDBYTEA tab,x       
+         CPA     'A',i
+         BREQ    affVoy
+         CPA     'E',i
+         BREQ    affVoy
+         CPA     'I',i
+         BREQ    affVoy
+         CPA     'O',i
+         BREQ    affVoy
+         CPA     'U',i
+         BREQ    affVoy
+         CPA     'Y',i
+         BREQ    affVoy
+         ADDX    1,i
+         CPX     compt,d
+         BRLT    bclVoy
+         
+         CHARO   '\n',i
+cons:    LDX     0,i
+         LDA     0,i
+bclCons: LDBYTEA tab,x       
+         CPA     'A',i
+         BREQ    ajCons
+         CPA     'E',i
+         BREQ    ajCons
+         CPA     'I',i
+         BREQ    ajCons
+         CPA     'O',i
+         BREQ    ajCons
+         CPA     'U',i
+         BREQ    ajCons
+         CPA     'Y',i
+         BREQ    ajCons
+         CHARO   tab,x
+         ADDX    1,i
+         CPX     compt,d
+         BRLT    bclCons
+
+fin:     STOP
+
+affVoy:  CHARO   tab,x
+         ADDX    1,i
+         CPX     compt,d
+         BRLT    bclVoy
+         BR      cons
+
+ajCons:  ADDX    1,i
+         CPX     compt,d
+         BRLT    bclCons
+         BR      fin
+
+compt:   .BLOCK  2
+tab:     .BLOCK  0
+         .END
+
+
+
+
+
+
+
