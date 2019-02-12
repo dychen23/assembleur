@@ -73,7 +73,7 @@ bcldiv10:SUBA    divis,i 	;on boucle jusqu'a c'est negatif
          ADDX    1,i
          CPA     0,i         
          BRGE    bcldiv10
-         ADDA    divis,i	; quand c'est negatif, on re-ajoute le modulo
+         ADDA    divis,i	; quand c'est negatif, on re-ajoute le reste
          SUBX    1,i
          STA     reste,d
          STX     res,d      
