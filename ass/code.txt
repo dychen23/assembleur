@@ -64,8 +64,6 @@ ltrNorm: SUBA    'A',i
          BR      bclLect 
 tiret:   LDX     temApTr,d   ;gere le cas de tiret
          BRNE    erreur
-         ;CPX     ' ',i
-         ;BREQ    erreur
          LDX     1,i 
          STX     temApTr,d
          LDA     totalCal,d
@@ -121,8 +119,7 @@ totalCal:.BLOCK  2           ;#2d
 divis:   .EQUATE 10          ;#2d
 res:     .BLOCK 2            ;#2d
 reste:   .BLOCK 2            ;#2d
-temApTr: .BLOCK 2 
-t:       .BLOCK 2           
+temApTr: .BLOCK 2           
          .END
 
 
