@@ -1,0 +1,22 @@
+Bienvenue au TP1 - programme de validation de nom de famille:
+
+Pour quitter, entrer ENTER
+Veuillez entrer votre nom de famille:amou
+
+Le code de validation est 7.
+
+Veuillez entrer votre nom de famille:Haji Baba Sufi
+
+Le code de validation est 1.
+
+Veuillez entrer votre nom de famille:Adam - Le Rouet
+
+Le code de validation est 0.
+
+Veuillez entrer votre nom de famille: Ford D'ARGENSON
+
+Entrée invalide
+
+Veuillez entrer votre nom de famille:D e l'Eglise-St-O'Reill y
+
+Entrée invalide

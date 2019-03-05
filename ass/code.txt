@@ -13,14 +13,15 @@
          LDA     0,i         ;initialisation à 0 du registre accumulateur
          LDX     0,i
          STRO    bienvenu,d  ;message bienvenue 
+         STRO    progVali,d
          STRO    msgQuit,d 
 debut:   STRO    msgEntre,d  ;message d'invite 
 bclLect: CHARI   caract,d    ;l'input de l'utilisateur
          LDA     avCaract,d
-         CPA     ' ',i	      ;verification des caracteres interdit
-         BREQ    bclLect     ;ou bien des caracteres speciaux
          CPA     '\n',i      
-         BREQ    div10       
+         BREQ    div10        
+         CPA     ' ',i	      ;verification des caractères interdit
+         BREQ    bclLect     ;ou bien des caractères spéciaux      
          CPA     '-',i 	     
          BREQ    tiret       
          CPA     'A',i       
@@ -32,12 +33,13 @@ bclLect: CHARI   caract,d    ;l'input de l'utilisateur
          CPA     'z',i 
          BRLE    transMin 
          BR      erreur
+         
 transMin:SUBA    0x0020,i
          STBYTEA caract,d
-verifVoy:LDX     0,i	       ;on verifie les voyelles pour les multiplier par 2
+verifVoy:LDX     0,i	       ;vérifier si voyelle et on multiplie par deux
          STX     temApTr,d
          CPA     'A',i
-         BREQ    multi2
+         BREQ    multi2      
          CPA     'E',i
          BREQ    multi2   
          CPA     'I',i
@@ -48,45 +50,46 @@ verifVoy:LDX     0,i	       ;on verifie les voyelles pour les multiplier par 2
          BREQ    multi2   
          CPA     'Y',i
          BREQ    multi2
-         BR      ltrNorm  
-multi2:  SUBA    'A',i       ;on multiplie par deux
+         BR      ltrNorm     ;sinon lettre normale
+multi2:  SUBA    'A',i       
          ADDA    1,i
          ASLA    
          ADDA    totalCal,d  ;on aditionne a totalCal
          STA     totalCal,d
          BR      bclLect
-ltrNorm: SUBA    'A',i       ;si c'est minuscule, on additione a totalCal
+ltrNorm: SUBA    'A',i       
          ADDA    1,i
          ADDA    totalCal,d
          STA     totalCal,d
          BR      bclLect 
-tiret:   LDX     temApTr,d   ;si c'est un tiret, on ajoute 27
+tiret:   LDX     temApTr,d   ;gere le cas de tiret
          BRNE    erreur
          LDX     1,i 
          STX     temApTr,d
          LDA     totalCal,d
-         ADDA    27,i
+         ADDA    27,i        
          STA     totalCal,d
          BR      bclLect
-apost:   LDX     temApTr,d   ;si c'est un apostrophe, on ajoute 28
+apost:   LDX     temApTr,d   ;gere le cas de apostrophe
          BRNE    erreur
          LDX     1,i 
          STX     temApTr,d
          LDA     totalCal,d
-         ADDA    28,i
+         ADDA    28,i        ;si c'est un apostrophe, on ajoute 28
          STA     totalCal,d
          BR      bclLect 
-;enter: 
+enter:   LDX     temApTr,d 
+         BRNE    fin           
 div10:   LDA     totalCal,d
          LDX     0,i
-bcldiv10:SUBA    divis,i     ;on boucle jusqu'a c'est negatif
+bcldiv10:SUBA    divis,i     ;on boucle jusqu'à c'est négatif
          ADDX    1,i
          CPA     0,i         
          BRGE    bcldiv10
-         ADDA    divis,i     ;quand c'est negatif, on re-ajoute le divis
+         ADDA    divis,i     ;quand c'est négatif, on re-ajoute le divis
          SUBX    1,i
          STA     reste,d
-         STX     res,d      
+         STX     res,d  
 affich:  STRO    msgVali1,d  ;on affiche les messages de validation
          DECO    reste,d 
          STRO    msgVali2,d      
@@ -94,18 +97,19 @@ affich:  STRO    msgVali1,d  ;on affiche les messages de validation
          STA     totalCal,d  
          BR      debut 
 erreur:  STRO    msgErr,d  
-bclTamp: CHARI   caract,d    ;vide le tampon
-entTamp: LDA     avCaract,d  ;vide le tampon
+bclTamp: CHARI   caract,d    ;on vide le tampon
+entTamp: LDA     avCaract,d  
          CPA     '\n',i
          BREQ    debut
          BR      bclTamp
 fin:     STRO    msgFin,d
          STOP
 
-bienvenu:.ASCII  "Bienvenue au TP1 :\n\n\x00"
+bienvenu:.ASCII  "Bienvenue au TP1 - \x00" 
+progVali:.ASCII  "programme de validation de nom de famille:\n\n\x00"
 msgQuit: .ASCII  "Pour quitter, entrer ENTER\n\x00"
 msgEntre:.ASCII  "Veuillez entrer votre nom de famille:\x00"
-msgErr:  .ASCII  "\nErreur: entrée invalide!\n\n\x00"
+msgErr:  .ASCII  "\nEntrée invalide\n\n\x00"
 msgVali1:.ASCII  "\nLe code de validation est \x00"
 msgVali2:.ASCII  ".\n\n\x00"
 msgFin:  .ASCII  "\nFin du programme.\x00"
@@ -115,7 +119,7 @@ totalCal:.BLOCK  2           ;#2d
 divis:   .EQUATE 10          ;#2d
 res:     .BLOCK 2            ;#2d
 reste:   .BLOCK 2            ;#2d
-temApTr: .BLOCK 2
+temApTr: .BLOCK 2           
          .END
 
 
