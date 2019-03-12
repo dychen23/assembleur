@@ -1,0 +1,216 @@
+debut:   LDA     0,i
+         LDX     0,i
+         STA     avPoint,d
+         STA     comptLu,d
+         STA     nbLu,d
+         STA     compt,d
+         CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    fin         
+         BR      sautEnt
+
+esp:     LDA     0,i
+         LDX     0,i
+         STA     avPoint,d
+         STA     nbLu,d
+         STA     compt,d 
+bclEsp:  CHARI   caract,d
+         LDA     avCaract,d
+sautEnt: CPA     ' ',i
+         BREQ    bclEsp
+         CPA     '\n',i 
+         BREQ    verifN
+         BR      sautEsp
+
+bclLect: CHARI   caract,d
+         LDA     avCaract,d
+sautEsp: CPA     '\n',i
+         BREQ    multi10F
+         CPA     ' ',i
+         BREQ    multi10            
+         CPA     '.',i
+         BREQ    point
+         CPA     '0',i 
+         BRLT    erreur
+         CPA     '9',i
+         BRGT    erreur
+         SUBA    '0',i
+         LDX     1,i
+         STX     avPoint,d
+         LDX     nbLu,d
+         ASLX
+         BRV     erreur
+         ASLX
+         BRV     erreur
+         ADDX    nbLu,d
+         BRV     erreur
+         ASLX 
+         BRV     erreur   
+         STX     nbLu,d
+         ADDA    nbLu,d
+         STA     nbLu,d
+         BR      bclLect       
+
+point:   CHARI   caract,d
+         LDA     compt,d
+         ADDA    1,i
+         STA     compt,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    verCompF
+         CPA     ' ',i
+         BREQ    verComp
+         LDA     compt,d
+         CPA     1,i
+         BRGT    erreur
+         LDA     avCaract,d            
+         CPA     '0',i 
+         BRLT    erreur
+         CPA     '9',i
+         BRGT    erreur
+         SUBA    '0',i
+         LDX     nbLu,d
+         ASLX
+         BRV     erreur
+         ASLX
+         BRV     erreur
+         ADDX    nbLu,d
+         BRV     erreur
+         ASLX   
+         BRV     erreur 
+         STX     nbLu,d
+         ADDA    nbLu,d
+         STA     nbLu,d
+         BR      point
+
+verifN:  LDA     comptLu,d
+         CPA     0,i
+         BREQ    erreur
+         SUBA    1,i
+         STA     comptLu,d 
+         BR      verif100 
+
+erreur:  STRO    msgErr,d
+         CHARO   '\n',i
+         BR      videTmp
+
+videTmp: LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    debut
+bclTmp:  CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    debut
+         BR      bclTmp
+
+multi10: LDX     nbLu,d
+         ASLX
+         ASLX
+         ADDX    nbLu,d
+         ASLX    
+         STX     nbLu,d
+         BR      nbTab
+
+multi10F:LDX     nbLu,d
+         ASLX
+         ASLX
+         ADDX    nbLu,d
+         ASLX    
+         STX     nbLu,d
+         BR      nbTabFin
+
+verComp: LDA     compt,d
+         CPA     1,i
+         BREQ    multi10
+         BR      nbTab
+
+verCompF:LDA     compt,d
+         CPA     1,i
+         BREQ    ptSeul 
+         BR      nbTabFin
+
+ptSeul:  LDA     avPoint,d 
+         CPA     1,i
+         BRNE    erreur
+         BR      multi10F
+
+nbTab:   LDX     comptLu,d
+         CPX     7,i
+         BRGE    erreur
+         LDA     nbLu,d
+         ASLX    
+         STA     tabNb,x
+         ASRX    
+         ADDX    1,i
+         STX     comptLu,d
+         BR      esp         
+
+nbTabFin:LDX     comptLu,d
+         CPX     7,i
+         BRGE    erreur
+         LDA     nbLu,d
+         ASLX    
+         STA     tabNb,x
+         ASRX     
+         STX     comptLu,d
+         BR      verif100
+
+verif100:LDX     0,i
+bclVerif:CPX     comptLu,d 
+         BRGT    debut
+         ASLX    
+         LDA     tabNb,x
+         CPA     1000,i
+         BRGT    erreur
+         ASRX
+         ADDX    1,i
+         BR      bclVerif 
+
+fin:     STOP
+
+div:     LDA     divid,d
+         LDX     0,i
+bclDiv:  SUBA    divis,d
+         ADDX    1,i
+         CPA     0,i
+         BRGE    bclDiv
+         ADDA    divis,d
+         SUBX    1,i
+         STA     reste,d
+         STX     res,d
+         RET0   
+
+msgErr:  .ASCII  "Entrée invalide\x00"
+avCaract:.BLOCK  1           ;#1h
+caract:  .BLOCK  1           ;#1h
+compt:   .BLOCK  2
+nbLu:    .BLOCK  2           ;#2d
+reste:   .BLOCK  2           ;#2d
+res:     .BLOCK  2           ;#2d
+divid:   .BLOCK  2           ;#2d
+divis:   .BLOCK  2           ;#2d
+comptLu: .BLOCK  2           ;#2d
+avPoint: .BLOCK  2
+tabNb:   .BLOCK  2           ;#2d
+tab1:    .BLOCK  2           ;#2d 
+tab2:    .BLOCK  2           ;#2d
+tab3:    .BLOCK  2           ;#2d
+tab4:    .BLOCK  2           ;#2d        
+tab5:    .BLOCK  2           ;#2d
+tab6:    .BLOCK  2           ;#2d
+         .END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
