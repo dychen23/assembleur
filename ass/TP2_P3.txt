@@ -1,3 +1,27 @@
+; ************************************************************
+;       Programme: code.txt     version PEP813 sous Windows
+;
+;       A l'entrée, l'utilisateur fournira 1 ou plusieurs montants gagnés à la loterie (max:7 tirages).
+;	Un montant doit être numérique, compris entre 0 et 100 inclusivement,
+;	et peut inclure une seule position décimale. (ex:11.1 2.2 33 0.4 5. .6 )
+;	Les montants suivants sont invalides: 7..7 . 8.88
+;	Les espaces sont acceptés avant ou après un montant et servent de séparateurs.
+;	Si la donnée d'entrée est invalide, le message "Entrée invalide" apparaitra et
+;	les données de cette entrée seront oubliées.  
+;	Le lot maximum sera affiché, la moyenne des lots sera calculée ainsi que l'écart-type.
+;	Lors des calculs, les résultats de la moyenne sont arrondis afin de ne conserver 
+;	qu'une seule décimale significative.
+;	Un sommaire récapitulatif apparaîtra à la fin du programme.
+;	En cas de débordement lors du calcul de l'écart-type, la mention nd (non disponible) 
+;	sera affichée.
+;
+;       auteur:         Andy Chen
+;       code permanent: CHEA2399303
+;       courriel:       chen.andy@courrier.uqam.ca
+;       date:           26-03-2019
+;       cours:          INF2171
+; ***********************************************************
+;
 debut:   LDA     0,i
          LDX     0,i
          STA     totCarre,d
