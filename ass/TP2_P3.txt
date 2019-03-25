@@ -25,7 +25,7 @@
 ; ***********************************************************
 ;
 
-debut:   LDA     0,i
+debut:   LDA     0,i		
          LDX     0,i
          STA     totCarre,d
          STA     avPoint,d
@@ -123,7 +123,7 @@ erreur:  STRO    msgErr,d
          CHARO   '\n',i
          BR      videTmp
 
-videTmp: LDA     avCaract,d
+videTmp: LDA     avCaract,d	;on vide le tampon
          CPA     '\n',i
          BREQ    debut
 bclTmp:  CHARI   caract,d
@@ -132,13 +132,13 @@ bclTmp:  CHARI   caract,d
          BREQ    debut
          BR      bclTmp
 
-multi10: LDX     nbLu,d
+multi10: LDX     nbLu,d		; on tasse le nb pour multiplier par 10
          ASLX
          ASLX
          ADDX    nbLu,d
          ASLX    
          STX     nbLu,d
-         BR      nbTab
+         BR      nbTab	
 
 multi10F:LDX     nbLu,d
          ASLX
@@ -146,7 +146,7 @@ multi10F:LDX     nbLu,d
          ADDX    nbLu,d
          ASLX    
          STX     nbLu,d
-         BR      nbTabFin
+         BR      nbTabFin	
 
 verComp: LDA     compt,d
          CPA     1,i
@@ -163,8 +163,8 @@ ptSeul:  LDA     avPoint,d
          BRNE    erreur
          BR      multi10F
 
-nbTab:   LDX     comptLu,d
-         CPX     7,i
+nbTab:   LDX     comptLu,d	
+         CPX     7,i		; on assure qu’on n’a pas plus de 7 chiffres
          BRGE    erreur
          LDA     nbLu,d
          ASLX    
