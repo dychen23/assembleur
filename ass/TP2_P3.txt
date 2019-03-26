@@ -215,7 +215,7 @@ bclMax:  CPX     comptLu,d
          STA     maxTab,d
          BR      bclMax
 
-affMax:  STRO    msgMax,d
+affMax:  STRO    msgMax,d         ; on affiche le maximum
          LDA     maxTab,d
          STA     divid,d
          LDA     10,i
@@ -385,7 +385,7 @@ finttq:  SUBA    1,i         ; 1 fois en trop
          STA     resRaci,d 
          RET0  
 
-arrond:  LDA     divisArr,d 
+arrond:  LDA     divisArr,d  ; on arrondie
          ASRA    
          BRC     impair
 pair:    LDA     divisArr,d 
