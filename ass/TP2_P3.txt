@@ -24,8 +24,9 @@
 ;       cours:          INF2171
 ; ***********************************************************
 ;
-
-debut:   LDA     0,i		
+         
+debut:   STRO    msgDeb,d
+         LDA     0,i		
          LDX     0,i
          STA     totCarre,d
          STA     avPoint,d
@@ -37,7 +38,6 @@ debut:   LDA     0,i
          CPA     '\n',i
          BREQ    fin         
          BR      sautEnt
-
 esp:     LDA     0,i
          LDX     0,i
          STA     avPoint,d
@@ -184,7 +184,7 @@ nbTabFin:LDX     comptLu,d
          STX     comptLu,d
          BR      verif100
 
-verif100:LDX     0,i
+verif100:LDX     0,i                  ; on vérifie que le nombre ne dépasse pas 100
 bclVerif:CPX     comptLu,d 
          BRGT    calculs
          ASLX    
@@ -195,7 +195,7 @@ bclVerif:CPX     comptLu,d
          ADDX    1,i
          BR      bclVerif 
 
-calculs: STRO    msgTir,d
+calculs: STRO    msgTir,d             ; on fait nos calculs
          LDA     comptLu,d
          ADDA    1,i
          STA     nbTir,d
@@ -238,7 +238,7 @@ bclMoy:  CPX     comptLu,d
          ADDX    1,i
          BR      bclMoy
 
-clcMoy:  STA     divid,d
+clcMoy:  STA     divid,d          ; calcule moyenne
          LDA     nbTir,d
          STA     divis,d
          CALL    div
@@ -252,7 +252,7 @@ clcMoy:  STA     divid,d
          LDA     nbArr,d
          STA     res,d
 
-affMoy:  LDA     res,d
+affMoy:  LDA     res,d            ; affiche moyenne
          STA     divid,d
          STA     moyTir,d
          LDA     10,i
@@ -268,7 +268,8 @@ affMoy:  LDA     res,d
 
          LDA     0,i
          LDX     0,i
-bclEcart:CPX     comptLu,d
+
+bclEcart:CPX     comptLu,d        ; calcule ecart
          BRGT    clcEcart
          ASLX    
          LDA     tabNb,x
@@ -285,11 +286,9 @@ bclEcart:CPX     comptLu,d
          ADDA    totCarre,d
          STA     totCarre,d
          ADDX    1,i
-         BR      bclEcart 
-         
-         
+         BR      bclEcart    
 
-clcEcart:LDA     totCarre,d
+clcEcart:LDA     totCarre,d          
          STA     divid,d
          LDA     nbTir,d
          STA     divis,d
@@ -304,7 +303,7 @@ ajout1E: LDA     res,d
          STA     res,d
          BR      affEcart
 
-affEcart:LDA     res,d
+affEcart:LDA     res,d            ; on affiche l'ecart
          STA     nombre,d
          CALL    racine
          LDA     resRaci,d
@@ -314,11 +313,17 @@ affEcart:LDA     res,d
          CALL    div
          STRO    msgEcart,d
          DECO    res,d
-         CHARO   '.',I
+         CHARO   '.',I                
          DECO    reste,d
+         STRO    msgSaut,d
          BR      debut
 
-fin:     STOP
+fin:     STRO    msgMaxF,d
+         STRO    msgSaut,d
+         STRO    msgTirF,d
+         STRO    msgSaut,d
+         STRO    msgMoyF,d
+         STOP
 
 div:     LDA     divid,d
          LDX     0,i
@@ -406,11 +411,18 @@ impair:  LDA     divisArr,d
          BRGT    arrAj1
          RET0
 
+msgDeb:  .ASCII  "Entrez les montants des lots gagnants:\n\x00"
 msgErr:  .ASCII  "Entrée invalide\x00"
 msgMax:  .ASCII  "Lot maximum: \x00"
 msgTir:  .ASCII  "Nombre de tirages: \x00"
 msgMoy:  .ASCII  "Moyenne des lots: \x00"
 msgEcart:.ASCII  "Ecart: \x00"
+msgSaut: .ASCII  "\n\x00"
+
+msgMaxF: .ASCII  "Nombre de périodes de tirages: \x00"
+msgTirF: .ASCII  "Nombre total de tirages: \x00"
+msgMoyF: .ASCII  "Moyenne des moyennes des lots gagnants: \x00"
+
 sauvX:   .BLOCK  2
 avCaract:.BLOCK  1           ;#1h
 caract:  .BLOCK  1           ;#1h
@@ -427,7 +439,7 @@ multip:  .BLOCK  2
 nbArr:   .BLOCK  2
 resteArr:.BLOCK  2
 divisArr:.BLOCK  2
-valAbs:	 .BLOCK  2
+valAbs:  .BLOCK  2
 comptLu: .BLOCK  2           ;#2d
 avPoint: .BLOCK  2
 totCarre:.BLOCK  2           ;#2d
