@@ -1,0 +1,17 @@
+         LDA     0,i
+         LDX     0,i
+bclLect: CHARI   tab,x
+         LDBYTEA tab,x
+         ADDX    1,i
+         CPA     '\n',i
+         BRNE    bclLect
+         SUBX    2,i
+bclAff:  CHARO   tab,x
+         SUBX    1,i
+         BRGE    bclAff
+         STOP
+
+;compt:  .BLOCK 2
+tab:    .BLOCK 0
+chaine: .ASCII "ABCEFGHIJKLMOPQRSTUVWXYZ\x00"
+        .END
