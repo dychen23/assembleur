@@ -1,0 +1,514 @@
+; ************************************************************
+;       Programme: code.txt     version PEP813 sous Windows
+;
+;	1) A l'entrée, l'utilisateur fournira 1 ou plusieurs montants gagnants à la loterie (max:7 tirages).
+;	2) Un montant, en millions, doit etre numérique, compris entre 0 et 100 inclusivement,
+;	   et peut inclure une seule position d?cimale. (ex:11.1 2.2 33 0.4 5. .6 )
+;	   Les montants suivants sont invalides: 7..7 . 8.88
+;	3) Les espaces sont acceptés avant ou apres un montant et servent de séparateurs.
+;	4) Si la donnée d'entrée est invalide, le message "Entrée invalide" apparaitra et
+;	   les données de cette entrée seront oubliées.  
+;	5) Le lot maximum sera affiché, la moyenne des lots sera calcul?e ainsi que l'écart-type.
+;	6) Lors des calculs, les résultats de la moyenne sont arrondis afin de ne conserver 
+;	   qu'une seule décimale significative.
+;	7) Un sommaire récapitulatif apparaitra à la fin du programme (voir ci-bas).
+;	   En cas de débordement lors du calcul de l'écart-type, la mention nd (non disponible) 
+;	   sera affichée.
+;	8) Le format de sortie est obligatoire et n'est pas modifiable.
+;	   Il est impossible d'afficher en gras.
+;       
+;       auteur:         Andy Chen
+;       code permanent: CHEA2399303
+;       courriel:       chen.andy@courrier.uqam.ca
+;       date:           26-03-2019
+;       cours:          INF2171
+; ***********************************************************
+;
+         STRO    msgDeb,d    
+         STRO    msgPoint,d     
+debut:   STRO    msgInv,d            ;msg dinvite
+         LDA     0,i		
+         LDX     0,i
+         STA     totCarre,d
+         STA     avPoint,d
+         STA     comptLu,d
+         STA     nbLu,d
+         STA     compt,d
+         CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    fin         
+         BR      sautEnt
+esp:     LDA     0,i
+         LDX     0,i
+         STA     avPoint,d
+         STA     nbLu,d
+         STA     compt,d 
+bclEsp:  CHARI   caract,d
+         LDA     avCaract,d
+sautEnt: CPA     ' ',i
+         BREQ    bclEsp
+         CPA     '\n',i 
+         BREQ    verifN
+         BR      sautEsp
+
+bclLect: CHARI   caract,d         ; lecture des chiffres
+         LDA     avCaract,d
+sautEsp: CPA     '\n',i
+         BREQ    multi10F
+         CPA     ' ',i
+         BREQ    multi10            
+         CPA     '.',i
+         BREQ    point
+         CPA     '0',i 
+         BRLT    erreur
+         CPA     '9',i
+         BRGT    erreur
+         SUBA    '0',i
+         LDX     1,i
+         STX     avPoint,d
+         LDX     nbLu,d
+         ASLX
+         BRV     erreur
+         ASLX
+         BRV     erreur
+         ADDX    nbLu,d
+         BRV     erreur
+         ASLX 
+         BRV     erreur   
+         STX     nbLu,d
+         ADDA    nbLu,d
+         STA     nbLu,d
+         BR      bclLect       
+
+point:   CHARI   caract,d
+         LDA     compt,d
+         ADDA    1,i
+         STA     compt,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    verCompF
+         CPA     ' ',i
+         BREQ    verComp
+         LDA     compt,d
+         CPA     1,i
+         BRGT    erreur
+         LDA     avCaract,d            
+         CPA     '0',i 
+         BRLT    erreur
+         CPA     '9',i
+         BRGT    erreur
+         SUBA    '0',i
+         LDX     nbLu,d
+         ASLX
+         BRV     erreur
+         ASLX
+         BRV     erreur
+         ADDX    nbLu,d
+         BRV     erreur
+         ASLX   
+         BRV     erreur 
+         STX     nbLu,d
+         ADDA    nbLu,d
+         STA     nbLu,d
+         BR      point
+
+verifN:  LDA     comptLu,d        
+         CPA     0,i
+         BREQ    erreur
+         SUBA    1,i
+         STA     comptLu,d 
+         BR      verif100 
+
+erreur:  STRO    msgErr,d
+         CHARO   '\n',i
+         BR      videTmp
+
+videTmp: LDA     avCaract,d	;on vide le tampon
+         CPA     '\n',i
+         BREQ    debut
+bclTmp:  CHARI   caract,d
+         LDA     avCaract,d
+         CPA     '\n',i
+         BREQ    debut
+         BR      bclTmp
+
+multi10: LDX     nbLu,d	
+         ASLX                     ; on fait un ASL pour multiplier par 10
+         ASLX
+         ADDX    nbLu,d
+         ASLX    
+         STX     nbLu,d
+         BR      nbTab	
+
+multi10F:LDX     nbLu,d
+         ASLX                     ; on fait un ASL pour multiplier par 10, fin
+         ASLX
+         ADDX    nbLu,d
+         ASLX    
+         STX     nbLu,d
+         BR      nbTabFin	
+
+verComp: LDA     compt,d
+         CPA     1,i
+         BREQ    ptSeulEs
+         BR      nbTab
+
+verCompF:LDA     compt,d
+         CPA     1,i
+         BREQ    ptSeul 
+         BR      nbTabFin
+
+ptSeul:  LDA     avPoint,d 
+         CPA     1,i
+         BRNE    erreur
+         BR      multi10F
+
+ptSeulEs:LDA     avPoint,d          
+         CPA     1,i
+         BRNE    erreur
+         BR      multi10
+
+nbTab:   LDX     comptLu,d	
+         CPX     7,i		; on assure quÕon nÕa pas plus de 7 chiffres
+         BRGE    erreur
+         LDA     nbLu,d
+         ASLX    
+         STA     tabNb,x
+         ASRX    
+         ADDX    1,i
+         STX     comptLu,d
+         BR      esp         
+
+nbTabFin:LDX     comptLu,d
+         CPX     7,i
+         BRGE    erreur
+         LDA     nbLu,d
+         ASLX    
+         STA     tabNb,x
+         ASRX     
+         STX     comptLu,d
+         BR      verif100
+
+verif100:LDX     0,i                  ; on vérifie que le nombre ne dépasse pas 100
+bclVerif:CPX     comptLu,d            
+         BRGT    calculs
+         ASLX    
+         LDA     tabNb,x
+         CPA     1000,i
+         BRGT    erreur
+         ASRX
+         ADDX    1,i
+         BR      bclVerif 
+
+calculs: STRO    msgTir,d             ; on fait nos calculs
+         LDA     comptLu,d
+         ADDA    1,i
+         STA     nbTir,d
+
+         LDA     nbTotalT,d           ; calcule le nb total tirages
+         ADDA    nbTir,d
+         STA     nbTotalT,d
+
+         DECO    nbTir,d              
+         CHARO   '\n',i
+         LDA     0,i
+         STA     maxTab,d
+         LDX     0,i
+
+bclMax:  CPX     comptLu,d
+         BRGT    affMax
+         ASLX
+         LDA     tabNb,x
+         ASRX
+         ADDX    1,i
+         CPA     maxTab,d
+         BRLE    bclMax
+         STA     maxTab,d
+         BR      bclMax
+
+affMax:  LDA     nbPTotal,d
+         ADDA    1,i 
+         STA     nbPTotal,d
+         
+         STRO    msgMax,d         ; on affiche le maximum
+         LDA     maxTab,d
+         STA     divid,d
+         LDA     10,i
+         STA     divis,d
+         CALL    div
+         DECO    res,d
+         CHARO   '.',i
+         DECO    reste,d
+         LDA     res,d
+         STA     valEsp,d
+         CALL    ajtEsp
+         LDA     0,i
+         LDX     0,i
+
+bclMoy:  CPX     comptLu,d
+         BRGT    clcMoy
+         ASLX
+         ADDA    tabNb,x
+         ASRX
+         ADDX    1,i
+         BR      bclMoy
+
+clcMoy:  STA     divid,d          ; calcule moyenne
+         LDA     nbTir,d
+         STA     divis,d
+         CALL    div
+         LDA     reste,d
+         STA     resteArr,d
+         LDA     divis,d
+         STA     divisArr,d
+         LDA     res,d 
+         STA     nbArr,d
+         CALL    arrond
+         LDA     nbArr,d
+         STA     res,d
+
+affMoy:  LDA     res,d            ; affiche moyenne
+         STA     divid,d
+         STA     moyTir,d
+
+         LDA     moyTotal,d
+         ADDA    moyTir,d 
+         STA     moyTotal,d
+
+         LDA     10,i
+         STA     divis,d
+         CALL    div
+         STRO    msgMoy,d
+         DECO    res,d
+         CHARO   '.',i 
+         DECO    reste,d
+         LDA     res,d
+         STA     valEsp,d
+         CALL    ajtEsp
+
+         LDA     0,i
+         LDX     0,i
+
+bclEcart:CPX     comptLu,d        ; calcule ecart
+         BRGT    clcEcart
+         ASLX    
+         LDA     tabNb,x
+         ASRX
+         SUBA    moyTir,d
+         STA     valAbs,d
+         CALL    abs
+         LDA     valAbs,d
+         STA     multic,d
+         STA     multip,d
+         STX     sauvX,d
+         CALL    multi
+         LDX     sauvX,d
+         ADDA    totCarre,d
+         STA     totCarre,d
+         ADDX    1,i
+         BR      bclEcart    
+
+clcEcart:LDA     totCarre,d          
+         STA     divid,d
+         LDA     nbTir,d
+         STA     divis,d
+         CALL    div
+         LDA     reste,d
+         CPA     5,i
+         BRGE    ajout1E
+         BR      affEcart
+
+ajout1E: LDA     res,d            ; formattage
+         ADDA    1,i
+         STA     res,d
+         BR      affEcart
+
+affEcart:LDA     res,d            ; on affiche l'ecart
+         STA     nombre,d
+         CALL    racine
+         LDA     resRaci,d
+         STA     divid,d
+         LDA     10,i
+         STA     divis,d
+         CALL    div
+         STRO    msgEcart,d
+         DECO    res,d
+         CHARO   '.',I                
+         DECO    reste,d
+         STRO    msgSaut,d
+         BR      debut
+
+fin:     STRO    msgPerF,d
+         DECO    nbPTotal,d 
+         STRO    msgSaut,d
+         STRO    msgTotF,d
+         DECO    nbTotalT,d
+         STRO    msgSaut,d
+
+         STRO    msgMoyF,d
+         
+         STA     divid,d          ; calcule moyenne
+         LDA     nbPTotal,d
+         STA     divis,d
+         CALL    div
+         LDA     reste,d
+         STA     resteArr,d
+         LDA     divis,d
+         STA     divisArr,d
+         LDA     res,d 
+         STA     nbArr,d
+         CALL    arrond
+         LDA     nbArr,d
+         STA     res,d
+
+
+         DECO    moyTotal,d
+
+         STOP
+
+div:     LDA     divid,d
+         LDX     0,i
+bclDiv:  SUBA    divis,d
+         ADDX    1,i
+         CPA     0,i
+         BRGE    bclDiv
+         ADDA    divis,d
+         SUBX    1,i
+         STA     reste,d
+         STX     res,d
+         RET0  
+
+multi:   LDA     0,i
+         LDX     1,i
+bclMult: ADDA    multic,d
+         ADDX    1,i
+         CPX     multip,d
+         BRLE    bclMult
+         STA     res,d 
+         RET0    
+
+abs:     LDA     valAbs,d 
+         BRGE    norm
+         NEGA
+         STA     valAbs,d
+norm:    RET0
+
+ajtEsp:  LDA     valEsp,d         ; formattage
+         CPA     100,i
+         BRGE    ajout2Es
+         CPA     10,i
+         BRGE    ajout3Es
+         CHARO   ' ',i
+         CHARO   ' ',i
+         CHARO   ' ',i
+         CHARO   ' ',i
+         RET0         
+ajout2Es:CHARO   ' ',i            ; formattage
+         CHARO   ' ',i
+         RET0
+ajout3Es:CHARO   ' ',i            ; formattage
+         CHARO   ' ',i
+         CHARO   ' ',i
+         RET0 
+
+racine:  LDA     1,i         
+         LDX     1,i         
+         STA     resRaci,d  
+tantque: CPX     nombre,d    ; tant que (x <= nombre)
+         BRGT    finttq      
+         ADDX    resRaci,d  
+         ADDX    resRaci,d  
+         ADDX    1,i         ; x <- 2 * résultat + 1
+         ADDA    1,i         
+         STA     resRaci,d  
+         BR      tantque     
+finttq:  SUBA    1,i         ; 1 fois en trop
+         STA     resRaci,d 
+         RET0  
+
+arrond:  LDA     divisArr,d  ; on arrondie
+         ASRA    
+         BRC     impair
+pair:    LDA     divisArr,d 
+         STA     divid,D
+         LDA     2,i
+         STA     divis,d
+         CALL    div
+         LDA     resteArr,d
+         CPA     res,d
+         BRGE    arrAj1
+         RET0
+arrAj1:  LDA     nbArr,d
+         ADDA    1,i
+         STA     nbArr,d
+         RET0
+impair:  LDA     divisArr,d
+         STA     divid,D
+         LDA     2,i
+         STA     divis,d
+         CALL    div
+         LDA     resteArr,d
+         CPA     res,d
+         BRGT    arrAj1
+         RET0
+
+msgDeb:  .ASCII  "Bienvenue au TP2.\nMode d'emploie: entrer jusqu'à 7 chiffres.\nPour quitter, entrer ENTER\x00"
+msgPoint:.ASCII  ".\n\x00"
+msgInv:  .ASCII  "Entrez les montants des lots gagnants:\n\x00"
+msgErr:  .ASCII  "Entrée invalide\x00"
+msgMax:  .ASCII  "Lot maximum: \x00"
+msgTir:  .ASCII  "Nombre de tirages: \x00"
+msgMoy:  .ASCII  "Moyenne des lots: \x00"
+msgEcart:.ASCII  "Ecart: \x00"
+msgSaut: .ASCII  "\n\x00"
+
+msgPerF: .ASCII  "Nombre de périodes de tirages: \x00"
+msgTotF: .ASCII  "Nombre total de tirages: \x00"
+msgMoyF: .ASCII  "Moyenne des moyennes des lots gagnants: \x00"
+
+nbPTotal:.BLOCK  2 
+nbTotalT:.BLOCK  2
+moyTotal:.BLOCK  2
+          
+sauvX:   .BLOCK  2
+avCaract:.BLOCK  1           ;#1h
+caract:  .BLOCK  1           ;#1h
+nombre:  .BLOCK  2
+resRaci: .BLOCK  2           
+compt:   .BLOCK  2
+nbLu:    .BLOCK  2           ;#2d
+reste:   .BLOCK  2           ;#2d
+res:     .BLOCK  2           ;#2d
+divid:   .BLOCK  2           ;#2d
+divis:   .BLOCK  2           ;#2d
+multic:  .BLOCK  2
+multip:  .BLOCK  2
+nbArr:   .BLOCK  2
+resteArr:.BLOCK  2
+divisArr:.BLOCK  2
+valAbs:  .BLOCK  2
+comptLu: .BLOCK  2           ;#2d
+avPoint: .BLOCK  2
+totCarre:.BLOCK  2           ;#2d
+valEsp:  .BLOCK  2
+moyTir:  .BLOCK  2
+nbTir:   .BLOCK  2
+maxTab:  .BLOCK  2           
+tabNb:   .BLOCK  14           
+           
+         .END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
