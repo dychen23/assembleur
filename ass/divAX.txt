@@ -1,0 +1,33 @@
+         LDA     10,i
+         LDX     8,i
+         CALL    div
+         STA     reste,d
+         STX     res,d
+         DECO    res,d
+         STRO    msgReste,d
+         DECO    reste,d
+         STOP
+
+div:     STX     divis,d 
+         LDX     0,i
+bclDiv:  CPA     0,i
+         BRLT    finDiv
+         ADDX    1,i
+         SUBA    divis,d
+         BR      bclDiv
+finDiv:  SUBX    1,i
+         ADDA    divis,d
+         RET0
+
+msgReste:.ASCII  " Reste: \x00"
+res:	   .BLOCK 2
+reste:   .BLOCK  2
+divis:   .BLOCK 2
+.END     
+
+
+
+
+
+
+
