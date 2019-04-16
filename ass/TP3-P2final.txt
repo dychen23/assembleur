@@ -1,0 +1,178 @@
+         LDA     -1,i
+         STA     addPrec,d
+         LDA     0,i 
+         LDX     0,i
+bclEsp:  CHARI   caract,d
+         LDA     avCaract,d
+         CPA     ' ',i 
+         BRNE    entLect
+         BR      bclEsp
+
+entLect: LDX     0,i
+         BR      pointEnt
+
+bclLect: CHARI   caract,d
+pointEnt:LDA     avCaract,d
+         CPA     ' ',i
+         BREQ    insListe
+         CPA     '\n',i
+         BREQ    insListF
+         STBYTEA buffer,x
+         ADDX    1,i
+         BR      bclLect
+
+insListe:LDA     0,i
+         STBYTEA buffer,x
+         LDA     sizeBlck,i
+         CALL    new
+         LDA     0,i
+         STX     addAct,d
+bclBuff: SUBX    addAct,d
+         LDBYTEA buffer,x
+         CPA     0,i
+         BREQ    finBuff
+         ADDX    addAct,d
+         STBYTEA chaine,x
+         ADDX    1,i
+         BR      bclBuff   
+finBuff: ADDX    addAct,d
+         STBYTEA chaine,x
+         LDX     addAct,d
+         LDA     -1,i
+         STA     addrNxt,x 
+         LDX     addPrec,d
+         CPX     -1,i
+         BREQ    sautPrec
+         LDA     addAct,d
+         STA     addrNxt,x 
+sautPrec:LDA     addAct,d
+         STA     addPrec,d
+         BR      bclEsp 
+
+insListF:LDA     0,i
+         STBYTEA buffer,x
+         LDA     sizeBlck,i
+         CALL    new
+         LDA     0,i
+         STX     addAct,d
+bclBuffF:SUBX    addAct,d
+         LDBYTEA buffer,x
+         CPA     0,i
+         BREQ    finBuffF
+         ADDX    addAct,d
+         STBYTEA chaine,x
+         ADDX    1,i
+         BR      bclBuffF        
+finBuffF:ADDX    addAct,d
+         STBYTEA chaine,x
+         LDX     addAct,d
+         LDA     -1,i
+         STA     addrNxt,x 
+         LDX     addPrec,d
+         CPX     -1,i
+         BREQ    sautPreF
+         LDA     addAct,d
+         STA     addrNxt,x 
+sautPreF:LDA     addAct,d
+         STA     addPrec,d
+         BR      tri 
+
+tri:     SUBSP   4,i         ;#add2 #add1 
+         LDX     heap,i
+         STX     add1,s
+         LDA     addrNxt,x 
+         STA     addAct,d 
+bclParc: LDA     addAct,d
+         CPA     -1,i
+         BREQ    affPetit
+         STA     add2,s
+         CALL    triChne
+         STX     addMin,d 
+         STX     add1,s
+         LDX     addAct,d
+         LDX     addrNxt,x
+         STX     addAct,d
+         BR      bclParc
+          
+
+
+affPetit:ADDSP   4,i         ;#add2 #add1 
+         LDA     0,i
+         LDBYTEA addMin,n
+         CPA     0x00FF,i
+         BREQ    fin
+         STRO    addMin,n
+         CHARO   ' ',i 
+         LDX     addMin,d
+         LDA     0x00FF,i
+         STBYTEA 0,x
+         BR      tri
+
+
+fin:     STOP
+
+;
+;
+;******* operator new
+;        Precondition: A contains number of bytes
+;        Postcondition: X contains pointer to bytes
+new:     LDX     hpPtr,d     ;returned pointer
+         ADDA    hpPtr,d     ;allocate from heap
+         STA     hpPtr,d     ;update hpPtr
+         RET0             
+;
+add1:    .EQUATE 0           ;#2h
+add2:    .EQUATE 2           ;#2h
+;
+; Retourne addresse plus petit dans 
+var1:    .EQUATE 0 ;#2h
+;
+triChne: SUBSP   2,i ;#var1
+         LDX     0,i 
+         LDA     0,i
+bclTri:  ADDX    4,s
+         LDBYTEA 0,x
+         STA     0,s
+         SUBX    4,s
+         ADDX    6,s
+         LDBYTEA 0,x
+         CPA     0,s
+         BRLT    plusPt
+         BREQ    egal
+         BRGT    plusGr
+plusPt:  LDX     6,s 
+         RET2    ;#var1 
+plusGr:  LDX     4,s
+         RET2    ;#var1   
+egal:    CPA     0,i
+         BREQ    plusGr
+         SUBX    6,s
+         ADDX    1,i
+         BR      bclTri 
+
+;Structure bloc        
+chaine:  .EQUATE 0
+addrNxt: .EQUATE 27
+sizeBlck:.EQUATE 29
+
+avCaract:.BLOCK  1
+caract:  .BLOCK  1
+addChne: .BLOCK  2
+addMin:  .BLOCK  2
+buffer:  .BLOCK  27
+addPrec: .BLOCK  2           ;#2d
+addAct:  .BLOCK  2           ;#2d
+nbLu:    .BLOCK  2
+tailleTb:.BLOCK  2
+tabAdd:  .BLOCK  26
+hpPtr:   .ADDRSS heap        ;address of next free byte
+heap:    .BLOCK  1           ;first byte in the heap
+         .END                ; 
+
+
+
+
+
+
+
+
